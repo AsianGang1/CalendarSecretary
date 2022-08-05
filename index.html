@@ -8,8 +8,8 @@
   <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
 </head>
 
-<body>
-  <section class="antialiased bg-gray-100 text-gray-600 h-screen px-4" x-data="app">
+<body class="antialiased bg-gray-100">
+  <section class="antialiased bg-gray-100 text-gray-600 h-screen px-4 pb-20" x-data="app">
 
 
     <div class="flex justify-center pt-20 mb-6">
@@ -44,7 +44,7 @@
 
 
 
-    <div class="flex flex-col justify-center">
+    <div class="flex flex-col justify-center pb-20">
 
       <!-- Table -->
       <div class="w-full max-w-2xl mx-auto bg-white shadow-lg rounded-sm border border-gray-200">
@@ -72,100 +72,7 @@
               </tr>
             </thead>
 
-            <tbody class="text-sm divide-y divide-gray-100">
-              <!-- record 1 -->
-              <tr>
-                <td class="p-2">
-                  <input type="checkbox" class="w-5 h-5" value="id-1" @click="toggleCheckbox($el, 2890.66)" />
-                </td>
-                <td class="p-2">
-                  <div class="font-medium text-gray-800">
-                    Samsung Galaxy Note 4
-                  </div>
-                </td>
-                <td class="p-2">
-                  <div class="text-left">1</div>
-                </td>
-                <td class="p-2">
-                  <div class="text-left font-medium text-green-500">
-                    RM 2,890.66
-                  </div>
-                </td>
-                <td class="p-2">
-                  <div class="flex justify-center">
-                    <button>
-                      <svg class="w-8 h-8 hover:text-blue-600 rounded-full hover:bg-gray-100 p-1" fill="none"
-                        stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
-                        </path>
-                      </svg>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-
-              <!-- record 2 -->
-              <tr>
-                <td class="p-2">
-                  <input type="checkbox" class="w-5 h-5" value="id-2" @click="toggleCheckbox($el, 120.50)" />
-                </td>
-                <td class="p-2">
-                  <div>
-                    <div class="font-medium text-gray-800">Logitech Keyboard</div>
-                  </div>
-                </td>
-                <td class="p-2">
-                  <div class="text-left">1</div>
-                </td>
-                <td class="p-2">
-                  <div class="text-left font-medium text-green-500">
-                    RM 120.50
-                  </div>
-                </td>
-                <td class="p-2">
-                  <div class="flex justify-center">
-                    <button>
-                      <svg class="w-8 h-8 hover:text-blue-600 rounded-full hover:bg-gray-100 p-1" fill="none"
-                        stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
-                        </path>
-                      </svg>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-
-              <!-- record 3 -->
-              <tr>
-                <td class="p-2">
-                  <input type="checkbox" class="w-5 h-5" value="id-3" @click="toggleCheckbox($el, 15.00)" />
-                </td>
-                <td class="p-2">
-                  <div>
-                    <div class="font-medium text-gray-800">Earphone</div>
-                  </div>
-                </td>
-                <td class="p-2">
-                  <div class="text-left">1</div>
-                </td>
-                <td class="p-2">
-                  <div class="text-left font-medium text-green-500">RM 15.00</div>
-                </td>
-                <td class="p-2">
-                  <div class="flex justify-center">
-                    <button>
-                      <svg class="w-8 h-8 hover:text-blue-600 rounded-full hover:bg-gray-100 p-1" fill="none"
-                        stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
-                        </path>
-                      </svg>
-                    </button>
-                  </div>
-                </td>
-              </tr>
+            <tbody class="text-sm divide-y divide-gray-100 py-10">
             </tbody>
           </table>
         </div>
@@ -184,13 +91,6 @@
 
   </section>
 
-
-
-
-
-
-
-  <pre id="content" style="white-space: pre-wrap"></pre>
   
 
   <script type="text/javascript">
@@ -210,7 +110,7 @@
 
     // Authorization scopes required by the API; multiple scopes can be
     // included, separated by spaces.
-    const SCOPES = "https://www.googleapis.com/auth/calendar.readonly";
+    const SCOPES = 'https://www.googleapis.com/auth/calendar';
 
     let tokenClient;
     let gapiInited = false;
@@ -285,7 +185,7 @@
       });
 
       request.execute(function (event) {
-        appendTable("Event created: " + event.htmlLink);
+        appendTable(event);
       });
     }
     function appendTable(message) {
@@ -296,14 +196,14 @@
                 </td>
                 <td class="p-2">
                   <div>
-                    <div class="font-medium text-gray-800">`+event.summary+`</div>
+                    <div class="font-medium text-gray-800">`+message.summary+`</div>
                   </div>
                 </td>
                 <td class="p-2">
-                  <div class="text-left">`+event.start+`</div>
+                  <div class="text-left">`+message.start.dateTime+`</div>
                 </td>
                 <td class="p-2">
-                  <div class="text-left font-medium text-green-500">`+event.end+`</div>
+                  <div class="text-left font-medium text-green-500">`+message.end.dateTime+`</div>
                 </td>
                 <td class="p-2">
                   <div class="flex justify-center">
@@ -391,18 +291,43 @@
       }
 
       const events = response.result.items;
+      var table = document.getElementById("table");
+      for (const event in events) {
+        data = events[event]
+        table.innerHTML += `<tr>
+                <td class="p-2">
+                  <input type="checkbox" class="w-5 h-5" value="id-3" @click="toggleCheckbox($el, 15.00)" />
+                </td>
+                <td class="p-2">
+                  <div>
+                    <div class="font-medium text-gray-800">`+data.summary+`</div>
+                  </div>
+                </td>
+                <td class="p-2">
+                  <div class="text-left">`+data.start.dateTime+`</div>
+                </td>
+                <td class="p-2">
+                  <div class="text-left font-medium text-green-500">`+data.end.dateTime+`</div>
+                </td>
+                <td class="p-2">
+                  <div class="flex justify-center">
+                    <button>
+                      <svg class="w-8 h-8 hover:text-blue-600 rounded-full hover:bg-gray-100 p-1" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                        </path>
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>`
+      }
+
       if (!events || events.length == 0) {
-        document.getElementById("content").innerText = "No events found.";
         return;
       }
-      // Flatten to string to display
-      const output = events.reduce(
-        (str, event) =>
-          `${str}${event.summary} (${event.start.dateTime || event.start.date
-          })\n`,
-        "Events:\n"
-      );
-      document.getElementById("content").innerText = output;
+
     }
   </script>
   <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
