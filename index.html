@@ -3,25 +3,116 @@
   <head>
     <title>Google Calendar API Quickstart</title>
     <meta charset="utf-8" />
+
+    <script
+      defer
+      src="https://unpkg.com/alpinejs@3.10.2/dist/cdn.min.js"
+    ></script>
+    <link
+      href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
   </head>
-  <body>
-    <p>Google Calendar API Quickstart</p>
+  <body class="antialiased bg-gray-100">
+    <section
+      class="antialiased bg-gray-100 text-gray-600 h-screen px-4 pb-20"
+      x-data="app"
+    >
+      <div class="flex justify-center pt-20 mb-6">
+        <!-- Meet the Team -->
+        <div class="container max-w-7xl px-4">
+          <!-- Section Header -->
+          <div class="flex flex-wrap justify-center text-center">
+            <div class="w-full lg:w-6/12 px-4">
+              <!-- Header -->
+              <h1 class="text-gray-900 text-4xl font-bold mb-4">
+                Calendar Secretary
+              </h1>
 
-    <!--Add buttons to initiate auth sequence and sign out-->
-    <button id="authorize_button" onclick="handleAuthClick()">Authorize</button>
-    <button id="signout_button" onclick="handleSignoutClick()">Sign Out</button>
+              <!-- Description -->
+              <p class="text-gray-700 text-lg font-light">Some Subtext</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
-    <pre id="content" style="white-space: pre-wrap"></pre>
-    <button onclick="createeEvent()" id="eventCreator">Create Event</button>
-    <form id="calendarInput" style="visibility: hidden">
-      <label for="summary">Summary:</label><br />
-      <input type="text" id="summary" name="summary" /><br />
-      <label for="location">Location:</label><br />
-      <input type="text" id="location" name="location" />
-      <input type="submit" value="Submit" />
-      <input type="text" id="location" name="location" />
-      <input type="submit" value="Submit" />
-    </form>
+      <div class="flex items-center justify-center">
+        <button
+          onclick="handleAuthClick()"
+          id="authorize_button"
+          class="px-4 py-2 rounded-xl text-white bg-green-500 hover:bg-green-600 transition"
+        >
+          Login
+        </button>
+      </div>
+      <div id="signout_button" class="flex items-center justify-center py-4">
+        <button
+          onclick="handleSignoutClick()"
+          class="text-white px-4 py-2 rounded-xl bg-red-500 hover:bg-red-600 transition"
+        >
+          Sign Out
+        </button>
+      </div>
+
+      <div class="flex flex-col justify-center pb-20">
+        <!-- Table -->
+        <div
+          class="w-full max-w-2xl mx-auto bg-white shadow-lg rounded-sm border border-gray-200"
+        >
+          <header class="px-5 py-4 border-b border-gray-100">
+            <div class="font-semibold text-gray-800">My Calendar</div>
+          </header>
+
+          <div class="overflow-x-auto p-3">
+            <table id="table" class="table-auto w-full">
+              <thead
+                class="text-xs font-semibold uppercase text-gray-400 bg-gray-50"
+              >
+                <tr>
+                  <th></th>
+                  <th class="p-2">
+                    <div class="font-semibold text-left">Event</div>
+                  </th>
+                  <th class="p-2">
+                    <div class="font-semibold text-left">Start</div>
+                  </th>
+                  <th class="p-2">
+                    <div class="font-semibold text-left">End</div>
+                  </th>
+                  <th class="p-2">
+                    <div class="font-semibold text-center">Action</div>
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody class="text-sm divide-y divide-gray-100 py-10"></tbody>
+            </table>
+          </div>
+
+          <!-- total amount -->
+          <div
+            class="flex justify-end font-bold space-x-4 text-2xl border-t border-gray-100 px-5 py-4"
+          >
+            <button
+              class="px-4 py-1 rounded-xl text-white bg-green-500 hover:bg-green-600 transition"
+              onclick="createeEvent()"
+            >
+              Create Event
+            </button>
+          </div>
+
+          <div class="flex justify-end">
+            <!-- send this data to backend (note: use class 'hidden' to hide this input) -->
+            <input
+              type="hidden"
+              class="border border-black bg-gray-50"
+              x-model="selected"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
     <div class="alan-btn"></div>
     <script
       type="text/javascript"
@@ -124,93 +215,97 @@
         rootEl: document.getElementById("alan-btn"),
       });
     </script>
-  <script type="text/javascript">
-    /* exported gapiLoaded */
-    /* exported gisLoaded */
-    /* exported handleAuthClick */
-    /* exported handleSignoutClick */
+    <script type="text/javascript">
+      /* exported gapiLoaded */
+      /* exported gisLoaded */
+      /* exported handleAuthClick */
+      /* exported handleSignoutClick */
 
-    // TODO(developer): Set to client ID and API key from the Developer Console
-    const CLIENT_ID =
-      "54461332338-mmb7gj8gpe3sh3evkmtq1n3vcfuliam4.apps.googleusercontent.com";
-    const API_KEY = "AIzaSyD4FX_3wYtAED3xTxw0I_dUaStc3OBbnZo";
+      // TODO(developer): Set to client ID and API key from the Developer Console
+      const CLIENT_ID =
+        "54461332338-mmb7gj8gpe3sh3evkmtq1n3vcfuliam4.apps.googleusercontent.com";
+      const API_KEY = "AIzaSyD4FX_3wYtAED3xTxw0I_dUaStc3OBbnZo";
 
-    // Discovery doc URL for APIs used by the quickstart
-    const DISCOVERY_DOC =
-      "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest";
+      // Discovery doc URL for APIs used by the quickstart
+      const DISCOVERY_DOC =
+        "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest";
 
-    // Authorization scopes required by the API; multiple scopes can be
-    // included, separated by spaces.
-    const SCOPES = 'https://www.googleapis.com/auth/calendar';
+      // Authorization scopes required by the API; multiple scopes can be
+      // included, separated by spaces.
+      const SCOPES = "https://www.googleapis.com/auth/calendar";
 
-    let tokenClient;
-    let gapiInited = false;
-    let gisInited = false;
+      let tokenClient;
+      let gapiInited = false;
+      let gisInited = false;
 
-    document.getElementById("authorize_button").style.visibility = "hidden";
-    document.getElementById("signout_button").style.visibility = "hidden";
+      document.getElementById("authorize_button").style.visibility = "hidden";
+      document.getElementById("signout_button").style.visibility = "hidden";
 
-    /**
-     * Callback after api.js is loaded.
-     */
-    function gapiLoaded() {
-      gapi.load("client", intializeGapiClient);
-    }
+      /**
+       * Callback after api.js is loaded.
+       */
+      function gapiLoaded() {
+        gapi.load("client", intializeGapiClient);
+      }
 
-    /**
-     * Callback after the API client is loaded. Loads the
-     * discovery doc to initialize the API.
-     */
-    async function intializeGapiClient() {
-      await gapi.client.init({
-        apiKey: API_KEY,
-        discoveryDocs: [DISCOVERY_DOC],
-      });
-      gapiInited = true;
-      maybeEnableButtons();
-    }
+      /**
+       * Callback after the API client is loaded. Loads the
+       * discovery doc to initialize the API.
+       */
+      async function intializeGapiClient() {
+        await gapi.client.init({
+          apiKey: API_KEY,
+          discoveryDocs: [DISCOVERY_DOC],
+        });
+        gapiInited = true;
+        maybeEnableButtons();
+      }
 
-    /**
-     * Callback after Google Identity Services are loaded.
-     */
-    function gisLoaded() {
-      tokenClient = google.accounts.oauth2.initTokenClient({
-        client_id: CLIENT_ID,
-        scope: SCOPES,
-        callback: "", // defined later
-      });
-      gisInited = true;
-      maybeEnableButtons();
-    }
-    function createeEvent(event) {
-     
+      /**
+       * Callback after Google Identity Services are loaded.
+       */
+      function gisLoaded() {
+        tokenClient = google.accounts.oauth2.initTokenClient({
+          client_id: CLIENT_ID,
+          scope: SCOPES,
+          callback: "", // defined later
+        });
+        gisInited = true;
+        maybeEnableButtons();
+      }
+      function createeEvent(event) {
+        var request = gapi.client.calendar.events.insert({
+          calendarId: "primary",
+          resource: event,
+        });
 
-
-      var request = gapi.client.calendar.events.insert({
-        calendarId: "primary",
-        resource: event,
-      });
-
-      request.execute(function (event) {
-        appendTable(event);
-      });
-    }
-    function appendTable(message) {
-      var table = document.getElementById("table");
-      table.innerHTML += `<tr>
+        request.execute(function (event) {
+          appendTable(event);
+        });
+      }
+      function appendTable(message) {
+        var table = document.getElementById("table");
+        table.innerHTML +=
+          `<tr>
                 <td class="p-2">
                   <input type="checkbox" class="w-5 h-5" value="id-3" @click="toggleCheckbox($el, 15.00)" />
                 </td>
                 <td class="p-2">
                   <div>
-                    <div class="font-medium text-gray-800">`+message.summary+`</div>
+                    <div class="font-medium text-gray-800">` +
+          message.summary +
+          `</div>
                   </div>
                 </td>
                 <td class="p-2">
-                  <div class="text-left">`+message.start.dateTime+`</div>
+                  <div class="text-left">` +
+          message.start.dateTime +
+          `</div>
                 </td>
                 <td class="p-2">
-                  <div class="text-left font-medium text-green-500">`+message.end.dateTime+`</div>
+                  <div class="text-left font-medium text-green-500">` +
+          message.end.dateTime +
+          `</div>
                 </td>
                 <td class="p-2">
                   <div class="flex justify-center">
@@ -224,42 +319,41 @@
                     </button>
                   </div>
                 </td>
-              </tr>`
-      
-    }
-    /**
-     * Enables user interaction after all libraries are loaded.
-     */
-    function maybeEnableButtons() {
-      if (gapiInited && gisInited) {
-        document.getElementById("authorize_button").style.visibility =
-          "visible";
+              </tr>`;
       }
-    }
-
-    /**
-     *  Sign in the user upon button click.
-     */
-    function handleAuthClick() {
-      tokenClient.callback = async (resp) => {
-        if (resp.error !== undefined) {
-          throw resp;
+      /**
+       * Enables user interaction after all libraries are loaded.
+       */
+      function maybeEnableButtons() {
+        if (gapiInited && gisInited) {
+          document.getElementById("authorize_button").style.visibility =
+            "visible";
         }
-        document.getElementById("signout_button").style.visibility =
-          "visible";
-        document.getElementById("authorize_button").innerText = "Refresh";
-        await listUpcomingEvents();
-      };
-
-      if (gapi.client.getToken() === null) {
-        // Prompt the user to select a Google Account and ask for consent to share their data
-        // when establishing a new session.
-        tokenClient.requestAccessToken({ prompt: "consent" });
-      } else {
-        // Skip display of account chooser and consent dialog for an existing session.
-        tokenClient.requestAccessToken({ prompt: "" });
       }
-    }
+
+      /**
+       *  Sign in the user upon button click.
+       */
+      function handleAuthClick() {
+        tokenClient.callback = async (resp) => {
+          if (resp.error !== undefined) {
+            throw resp;
+          }
+          document.getElementById("signout_button").style.visibility =
+            "visible";
+          document.getElementById("authorize_button").innerText = "Refresh";
+          await listUpcomingEvents();
+        };
+
+        if (gapi.client.getToken() === null) {
+          // Prompt the user to select a Google Account and ask for consent to share their data
+          // when establishing a new session.
+          tokenClient.requestAccessToken({ prompt: "consent" });
+        } else {
+          // Skip display of account chooser and consent dialog for an existing session.
+          tokenClient.requestAccessToken({ prompt: "" });
+        }
+      }
 
       /**
        *  Sign out the user upon button click.
@@ -297,24 +391,31 @@
           return;
         }
 
-      const events = response.result.items;
-      var table = document.getElementById("table");
-      for (const event in events) {
-        data = events[event]
-        table.innerHTML += `<tr>
+        const events = response.result.items;
+        var table = document.getElementById("table");
+        for (const event in events) {
+          data = events[event];
+          table.innerHTML +=
+            `<tr>
                 <td class="p-2">
                   <input type="checkbox" class="w-5 h-5" value="id-3" @click="toggleCheckbox($el, 15.00)" />
                 </td>
                 <td class="p-2">
                   <div>
-                    <div class="font-medium text-gray-800">`+data.summary+`</div>
+                    <div class="font-medium text-gray-800">` +
+            data.summary +
+            `</div>
                   </div>
                 </td>
                 <td class="p-2">
-                  <div class="text-left">`+data.start.dateTime+`</div>
+                  <div class="text-left">` +
+            data.start.dateTime +
+            `</div>
                 </td>
                 <td class="p-2">
-                  <div class="text-left font-medium text-green-500">`+data.end.dateTime+`</div>
+                  <div class="text-left font-medium text-green-500">` +
+            data.end.dateTime +
+            `</div>
                 </td>
                 <td class="p-2">
                   <div class="flex justify-center">
@@ -328,38 +429,46 @@
                     </button>
                   </div>
                 </td>
-              </tr>`
+              </tr>`;
+        }
+
+        if (!events || events.length == 0) {
+          return;
+        }
       }
+    </script>
+    <script
+      async
+      defer
+      src="https://apis.google.com/js/api.js"
+      onload="gapiLoaded()"
+    ></script>
+    <script
+      async
+      defer
+      src="https://accounts.google.com/gsi/client"
+      onload="gisLoaded()"
+    ></script>
+    <script>
+      document.addEventListener("alpine:init", () => {
+        Alpine.data("app", () => ({
+          total: 0,
+          selected: [],
 
-      if (!events || events.length == 0) {
-        return;
-      }
+          toggleCheckbox(element, amount) {
+            if (element.checked) {
+              this.selected.push(element.value);
+              this.total += amount;
+            } else {
+              const index = this.selected.indexOf(element.value);
 
-    }
-  </script>
-  <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
-  <script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
-  <script>
-    document.addEventListener("alpine:init", () => {
-      Alpine.data("app", () => ({
-        total: 0,
-        selected: [],
+              if (index > -1) this.selected.splice(index, 1);
 
-        toggleCheckbox(element, amount) {
-          if (element.checked) {
-            this.selected.push(element.value);
-            this.total += amount;
-          } else {
-            const index = this.selected.indexOf(element.value);
-
-            if (index > -1) this.selected.splice(index, 1);
-
-            this.total -= amount;
-          }
-        },
-      }));
-    });
-  </script>
-</body>
-
+              this.total -= amount;
+            }
+          },
+        }));
+      });
+    </script>
+  </body>
 </html>
