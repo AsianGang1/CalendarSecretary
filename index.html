@@ -12,8 +12,118 @@
     <button id="signout_button" onclick="handleSignoutClick()">Sign Out</button>
 
     <pre id="content" style="white-space: pre-wrap"></pre>
-    <button onclick="createeEvent()">Create Event</button>
+    <button onclick="createeEvent()" id="eventCreator">Create Event</button>
+    <form id="calendarInput" style="visibility: hidden">
+      <label for="summary">Summary:</label><br />
+      <input type="text" id="summary" name="summary" /><br />
+      <label for="location">Location:</label><br />
+      <input type="text" id="location" name="location" />
+      <input type="submit" value="Submit" />
+      <input type="text" id="location" name="location" />
+      <input type="submit" value="Submit" />
+    </form>
+    <div class="alan-btn"></div>
+    <script
+      type="text/javascript"
+      src="https://studio.alan.app/web/lib/alan_lib.min.js"
+    ></script>
+    <script>
+      function extractREG(REG) {
+        var keys = ["description", "location", "frequency", "count"];
+        var vals = ["", "", "", ""];
 
+        var startsDict = {};
+        keys.forEach((element) => {
+          var s = REG.indexOf(element);
+          startsDict[element] = s;
+        });
+        dictVals = Object.values(startsDict);
+        //REG.length = strLen
+        function getNextLargest(num, arr, strLen) {
+          min_largest = 1000000;
+          arr.forEach((i) => {
+            if (i > num && i < min_largest) {
+              min_largest = i;
+            }
+          });
+          return Math.min(min_largest, strLen);
+        }
+        for (var i = 0; i < Object.keys(startsDict).length; i++) {
+          if (dictVals[i] > 0) {
+            var end_ind = getNextLargest(dictVals[i], dictVals, REG.length);
+            console.log(end_ind);
+            vals[i] = REG.substring(
+              dictVals[i] + keys[i].length,
+              end_ind
+            ).trim();
+          }
+        }
+        return vals;
+      }
+      var alanBtnInstance = alanBtn({
+        key: "aa8e87eca3b62befe745d3d71b0f8b0c2e956eca572e1d8b807a3e2338fdd0dc/stage",
+        onCommand: function (commandData) {
+          // {name: p.SUMMARY.value, start: p.S.value, end: p.E.value, reg: p.REG.value}
+          //"description", "location", "frequency", "count"
+          console.log(commandData);
+          let desc, loc, freq, count;
+          [desc, loc, freq, count] = extractREG(commandData.reg);
+          ruleString = "";
+          if (freq != "") {
+            if (count != "") {
+              ruleString = `RRULE:FREQ=${freq};COUNT=${count}`;
+            } else {
+              ruleString = `RRULE:FREQ=${freq}`;
+            }
+            var event = {
+              summary: commandData.name,
+              location: loc,
+              description: desc,
+              start: {
+                dateTime: commandData.start + "T00:00:00-07:00",
+                timeZone: "America/Los_Angeles",
+              },
+              end: {
+                dateTime: commandData.end + "T00:00:00-07:00",
+                timeZone: "America/Los_Angeles",
+              },
+              recurrence: [ruleString],
+              reminders: {
+                useDefault: false,
+                overrides: [
+                  { method: "email", minutes: 24 * 60 },
+                  { method: "popup", minutes: 10 },
+                ],
+              },
+            };
+          } else {
+            var event = {
+              summary: commandData.name,
+              location: loc,
+              description: desc,
+              start: {
+                dateTime: commandData.start + "T00:00:00-07:00",
+                timeZone: "America/Los_Angeles",
+              },
+              end: {
+                dateTime: commandData.end + "T00:00:00-07:00",
+                timeZone: "America/Los_Angeles",
+              },
+              reminders: {
+                useDefault: false,
+                overrides: [
+                  { method: "email", minutes: 24 * 60 },
+                  { method: "popup", minutes: 10 },
+                ],
+              },
+            };
+          }
+
+          createeEvent(event);
+        },
+        rootEl: document.getElementById("alan-btn"),
+      });
+    </script>
     <script type="text/javascript">
       /* exported gapiLoaded */
       /* exported gisLoaded */
@@ -31,7 +141,7 @@
 
       // Authorization scopes required by the API; multiple scopes can be
       // included, separated by spaces.
-      const SCOPES = "https://www.googleapis.com/auth/calendar.readonly";
+      const SCOPES = "https://www.googleapis.com/auth/calendar";
 
       let tokenClient;
       let gapiInited = false;
@@ -39,7 +149,7 @@
 
       document.getElementById("authorize_button").style.visibility = "hidden";
       document.getElementById("signout_button").style.visibility = "hidden";
-
+      document.getElementById("eventCreator").style.visibility = "hidden";
       /**
        * Callback after api.js is loaded.
        */
@@ -72,33 +182,9 @@
         gisInited = true;
         maybeEnableButtons();
       }
-      function createeEvent() {
-        var event = {
-          summary: "Google I/O 2015",
-          location: "800 Howard St., San Francisco, CA 94103",
-          description:
-            "A chance to hear more about Google's developer products.",
-          start: {
-            dateTime: "2022-05-28T09:00:00-07:00",
-            timeZone: "America/Los_Angeles",
-          },
-          end: {
-            dateTime: "2022-05-28T17:00:00-07:00",
-            timeZone: "America/Los_Angeles",
-          },
-          recurrence: ["RRULE:FREQ=DAILY;COUNT=2"],
-          attendees: [
-            { email: "lpage@example.com" },
-            { email: "sbrin@example.com" },
-          ],
-          reminders: {
-            useDefault: false,
-            overrides: [
-              { method: "email", minutes: 24 * 60 },
-              { method: "popup", minutes: 10 },
-            ],
-          },
-        };
+      function createeEvent(event) {
+        // https://developers.google.com/calendar/api/v3/reference/events
+        // command full: calendar add, name (name), description (desc), location (loc), frequency (freq), count (count) date (DATE) | until (DATE), all day | (time) to (time),
 
         var request = gapi.client.calendar.events.insert({
           calendarId: "primary",
@@ -134,6 +220,7 @@
           }
           document.getElementById("signout_button").style.visibility =
             "visible";
+          document.getElementById("eventCreator").style.visibility = "visible";
           document.getElementById("authorize_button").innerText = "Refresh";
           await listUpcomingEvents();
         };
