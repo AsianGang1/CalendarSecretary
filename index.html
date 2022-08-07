@@ -337,7 +337,7 @@
       function gapiLoaded() {
         gapi.load("client", intializeGapiClient);
       }
-
+      function deleteEvent(event) {}
       /**
        * Callback after the API client is loaded. Loads the
        * discovery doc to initialize the API.
@@ -376,30 +376,39 @@
       function appendTable(message) {
         var table = document.getElementById("table");
         table.innerHTML +=
-          `<tr>
+            `<tr id="` +
+            message.id +
+            `">
                 <td class="p-2">
                   <input type="checkbox" class="w-5 h-5" value="id-3" @click="toggleCheckbox($el, 15.00)" />
                 </td>
                 <td class="p-2">
                   <div>
                     <div class="font-medium text-gray-800">` +
-          message.summary +
-          `</div>
+            message.summary +
+            `</div>
                   </div>
                 </td>
                 <td class="p-2">
                   <div class="text-left">` +
-          message.start.dateTime +
-          `</div>
+            message.start.dateTime +
+            `</div>
                 </td>
                 <td class="p-2">
                   <div class="text-left font-medium text-green-500">` +
-          message.end.dateTime +
-          `</div>
+            message.end.dateTime +
+            `</div>
                 </td>
                 <td class="p-2">
                   <div class="flex justify-center">
-                    <button>
+                    <button onclick='var request = gapi.client.calendar.events.delete({
+          calendarId: "primary",
+          eventId: "` +
+            message.id +
+            `",
+        });request.execute();document.getElementById("` +
+            message.id +
+            `").remove()'>
                       <svg class="w-8 h-8 hover:text-blue-600 rounded-full hover:bg-gray-100 p-1" fill="none"
                         stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -525,10 +534,13 @@
 
         const events = response.result.items;
         var table = document.getElementById("table");
+        console.log("listing upcoming");
         for (const event in events) {
           data = events[event];
           table.innerHTML +=
-            `<tr>
+            `<tr id="` +
+            data.id +
+            `">
                 <td class="p-2">
                   <input type="checkbox" class="w-5 h-5" value="id-3" @click="toggleCheckbox($el, 15.00)" />
                 </td>
@@ -551,7 +563,14 @@
                 </td>
                 <td class="p-2">
                   <div class="flex justify-center">
-                    <button>
+                    <button onclick='var request = gapi.client.calendar.events.delete({
+          calendarId: "primary",
+          eventId: "` +
+            data.id +
+            `",
+        });request.execute();document.getElementById("` +
+            data.id +
+            `").remove()'>
                       <svg class="w-8 h-8 hover:text-blue-600 rounded-full hover:bg-gray-100 p-1" fill="none"
                         stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -562,6 +581,22 @@
                   </div>
                 </td>
               </tr>`;
+          console.log(data.id);
+          console.log(`<button onclick='var request = gapi.client.calendar.events.delete({
+          calendarId: "primary",
+          eventId: "` +
+            data.id +
+            `",
+        });request.execute();document.getElementById("` +
+            data.id +
+            `").remove()'>
+                      <svg class="w-8 h-8 hover:text-blue-600 rounded-full hover:bg-gray-100 p-1" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                        </path>
+                      </svg>
+                    </button>`)
         }
 
         if (!events || events.length == 0) {
