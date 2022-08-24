@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Calendar Secretary</title>
+    <meta charset="utf-8" />
+
+    <script
+      defer
+      src="https://unpkg.com/alpinejs@3.10.2/dist/cdn.min.js"
+    ></script>
+    <link
+      href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body class="antialiased bg-gray-100">
+    <section
+      class="antialiased bg-gray-100 text-gray-600 h-screen px-4 pb-20"
+      x-data="app"
+    >
+      <div class="flex justify-center pt-20 mb-6">
+        <!-- Meet the Team -->
+        <div class="container max-w-7xl px-4">
+          <!-- Section Header -->
+          <div class="flex flex-wrap justify-center text-center">
+            <div class="w-full lg:w-6/12 px-4">
+              <!-- Header -->
+              <h1 class="text-gray-900 text-4xl font-bold mb-4">
+                Calendar Secretary
+              </h1>
+
+              <!-- Description -->
+              <p class="text-gray-700 text-lg font-light">
+                By Nathan Lintu and Erik Pederson
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-center">
+        <button
+          onclick="handleAuthClick()"
+          id="authorize_button"
+          class="mx-1 px-4 py-2 rounded-xl text-white bg-green-500 hover:bg-green-600 transition"
+        >
+          Authorize
+        </button>
+        <!-- <button
+          onclick="showHow()"
+          id="howto_button"
+          class="mx-1 px-4 py-2 rounded-xl text-white bg-green-500 hover:bg-green-600 transition"
+        >
+          How To Use
+        </button> -->
+      </div>
+      <div id="signout_button" class="flex items-center justify-center py-4">
+        <button
+          onclick="handleSignoutClick()"
+          class="text-white px-4 py-2 rounded-xl bg-red-500 hover:bg-red-600 transition"
+        >
+          Sign Out
+        </button>
+      </div>
+
+      <div class="flex flex-col justify-center pb-20">
+        <!-- Table -->
+        <div
+          class="w-full max-w-2xl mx-auto bg-white shadow-lg rounded-sm border border-gray-200"
+        >
+          <header class="px-5 py-4 border-b border-gray-100">
+            <div class="font-semibold text-gray-800">My Calendar</div>
+          </header>
+
+          <div class="overflow-x-auto p-3">
+            <table id="table" class="table-auto w-full">
+              <thead
+                class="text-xs font-semibold uppercase text-gray-400 bg-gray-50"
+              >
+                <tr>
+                  <th></th>
+                  <th class="p-2">
+                    <div class="font-semibold text-left">Event</div>
+                  </th>
+                  <th class="p-2">
+                    <div class="font-semibold text-left">Start</div>
+                  </th>
+                  <th class="p-2">
+                    <div class="font-semibold text-left">End</div>
+                  </th>
+                  <th class="p-2">
+                    <div class="font-semibold text-center">Action</div>
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody class="text-sm divide-y divide-gray-100 py-10"></tbody>
+            </table>
+          </div>
+
+          <!-- total amount
+          <div
+            class="flex justify-end font-bold space-x-4 text-2xl border-t border-gray-100 px-5 py-4"
+          >
+            <button
+              disabled
+              id="eventCreator"
+              class="px-4 py-1 rounded-xl text-white bg-green-500 hover:bg-green-600 transition disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none"
+              onclick="createeEvent()"
+            >
+              Create Event
+            </button>
+          </div> -->
+
+          <div class="flex justify-end">
+            <!-- send this data to backend (note: use class 'hidden' to hide this input) -->
+            <input
+              type="hidden"
+              class="border border-black bg-gray-50"
+              x-model="selected"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- <div
+      id="defaultModal"
+      tabindex="-1"
+      aria-hidden="true"
+      class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 w-full md:inset-0 h-modal md:h-full"
+    >
+      <div class="relative p-4 w-full max-w-2xl h-full md:h-auto">
+
+        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+
+          <div
+            class="flex justify-between items-start p-4 rounded-t border-b dark:border-gray-600"
+          >
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+              Terms of Service
+            </h3>
+            <button
+              type="button"
+              class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+              data-modal-toggle="defaultModal"
+            >
+              <svg
+                aria-hidden="true"
+                class="w-5 h-5"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                  clip-rule="evenodd"
+                ></path>
+              </svg>
+              <span class="sr-only">Close modal</span>
+            </button>
+          </div>
+
+          <div class="p-6 space-y-6">
+            <p
+              class="text-base leading-relaxed text-gray-500 dark:text-gray-400"
+            >
+              With less than a month to go before the European Union enacts new
+              consumer privacy laws for its citizens, companies around the world
+              are updating their terms of service agreements to comply.
+            </p>
+            <p
+              class="text-base leading-relaxed text-gray-500 dark:text-gray-400"
+            >
+              The European Union’s General Data Protection Regulation (G.D.P.R.)
+              goes into effect on May 25 and is meant to ensure a common set of
+              data rights in the European Union. It requires organizations to
+              notify users as soon as possible of high-risk data breaches that
+              could personally affect them.
+            </p>
+          </div>
+
+          <div
+            class="flex items-center p-6 space-x-2 rounded-b border-t border-gray-200 dark:border-gray-600"
+          >
+            <button
+              data-modal-toggle="defaultModal"
+              type="button"
+              class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            >
+              I accept
+            </button>
+            <button
+              data-modal-toggle="defaultModal"
+              type="button"
+              class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
+            >
+              Decline
+            </button>
+          </div>
+        </div>
+      </div>
+    </div> -->
+    <div class="alan-btn"></div>
+    <script
+      type="text/javascript"
+      src="https://studio.alan.app/web/lib/alan_lib.min.js"
+    ></script>
+    <script>
+      function getNextLargest(num, arr, strLen) {
+        min_largest = 1000000;
+        arr.forEach((i) => {
+          if (i > num && i < min_largest) {
+            min_largest = i;
+          }
+        });
+        return Math.min(min_largest, strLen);
+      }
+      function extractREG(REG) {
+        var keys = ["description", "location", "frequency", "count"];
+        var vals = ["", "", "", ""];
+
+        var startsDict = {};
+        keys.forEach((element) => {
+          var s = REG.indexOf(element);
+          startsDict[element] = s;
+        });
+        dictVals = Object.values(startsDict);
+        //REG.length = strLen
+
+        for (var i = 0; i < Object.keys(startsDict).length; i++) {
+          if (dictVals[i] >= 0) {
+            var end_ind = getNextLargest(dictVals[i], dictVals, REG.length);
+            console.log(end_ind);
+            vals[i] = REG.substring(
+              dictVals[i] + keys[i].length,
+              end_ind
+            ).trim();
+          }
+        }
+        return vals;
+      }
+      var alanBtnInstance = alanBtn({
+        key: "aa8e87eca3b62befe745d3d71b0f8b0c2e956eca572e1d8b807a3e2338fdd0dc/stage",
+        onCommand: function (commandData) {
+          // {name: p.SUMMARY.value, start: p.S.value, end: p.E.value, reg: p.REG.value}
+          //"description", "location", "frequency", "count"
+          console.log(commandData);
+          let desc, loc, freq, count;
+          [desc, loc, freq, count] = extractREG(commandData.reg);
+          ruleString = "";
+          if (freq != "") {
+            if (count != "") {
+              ruleString = `RRULE:FREQ=${freq};COUNT=${count}`;
+            } else {
+              ruleString = `RRULE:FREQ=${freq}`;
+            }
+            var event = {
+              summary: commandData.name,
+              location: loc,
+              description: desc,
+              start: {
+                dateTime: commandData.start + "T00:00:00-07:00",
+                timeZone: "America/Los_Angeles",
+              },
+              end: {
+                dateTime: commandData.end + "T00:00:00-07:00",
+                timeZone: "America/Los_Angeles",
+              },
+              recurrence: [ruleString],
+              reminders: {
+                useDefault: false,
+                overrides: [
+                  { method: "email", minutes: 24 * 60 },
+                  { method: "popup", minutes: 10 },
+                ],
+              },
+            };
+          } else {
+            var event = {
+              summary: commandData.name,
+              location: loc,
+              description: desc,
+              start: {
+                dateTime: commandData.start + "T00:00:00-07:00",
+                timeZone: "America/Los_Angeles",
+              },
+              end: {
+                dateTime: commandData.end + "T00:00:00-07:00",
+                timeZone: "America/Los_Angeles",
+              },
+              reminders: {
+                useDefault: false,
+                overrides: [
+                  { method: "email", minutes: 24 * 60 },
+                  { method: "popup", minutes: 10 },
+                ],
+              },
+            };
+          }
+
+          createeEvent(event);
+        },
+        rootEl: document.getElementById("alan-btn"),
+      });
+    </script>
+    <script type="text/javascript">
+      /* exported gapiLoaded */
+      /* exported gisLoaded */
+      /* exported handleAuthClick */
+      /* exported handleSignoutClick */
+
+      // TODO(developer): Set to client ID and API key from the Developer Console
+      const CLIENT_ID =
+        "54461332338-mmb7gj8gpe3sh3evkmtq1n3vcfuliam4.apps.googleusercontent.com";
+      const API_KEY = "AIzaSyD4FX_3wYtAED3xTxw0I_dUaStc3OBbnZo";
+
+      // Discovery doc URL for APIs used by the quickstart
+      const DISCOVERY_DOC =
+        "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest";
+
+      // Authorization scopes required by the API; multiple scopes can be
+      // included, separated by spaces.
+      const SCOPES = "https://www.googleapis.com/auth/calendar";
+
+      let tokenClient;
+      let gapiInited = false;
+      let gisInited = false;
+
+      document.getElementById("authorize_button").style.visibility = "hidden";
+      document.getElementById("signout_button").style.visibility = "hidden";
+
+      /**
+       * Callback after api.js is loaded.
+       */
+      function gapiLoaded() {
+        gapi.load("client", intializeGapiClient);
+      }
+      function deleteEvent(event) {}
+      /**
+       * Callback after the API client is loaded. Loads the
+       * discovery doc to initialize the API.
+       */
+      async function intializeGapiClient() {
+        await gapi.client.init({
+          apiKey: API_KEY,
+          discoveryDocs: [DISCOVERY_DOC],
+        });
+        gapiInited = true;
+        maybeEnableButtons();
+      }
+
+      /**
+       * Callback after Google Identity Services are loaded.
+       */
+      function gisLoaded() {
+        tokenClient = google.accounts.oauth2.initTokenClient({
+          client_id: CLIENT_ID,
+          scope: SCOPES,
+          callback: "", // defined later
+        });
+        gisInited = true;
+        maybeEnableButtons();
+      }
+      function createeEvent(event) {
+        var request = gapi.client.calendar.events.insert({
+          calendarId: "primary",
+          resource: event,
+        });
+
+        request.execute(function (event) {
+          appendTable(event);
+        });
+      }
+      function appendTable(message) {
+        var table = document.getElementById("table");
+        table.innerHTML +=
+            `<tr id="` +
+            message.id +
+            `">
+                <td class="p-2">
+                  <input type="checkbox" class="w-5 h-5" value="id-3" @click="toggleCheckbox($el, 15.00)" />
+                </td>
+                <td class="p-2">
+                  <div>
+                    <div class="font-medium text-gray-800">` +
+            message.summary +
+            `</div>
+                  </div>
+                </td>
+                <td class="p-2">
+                  <div class="text-left">` +
+            message.start.dateTime +
+            `</div>
+                </td>
+                <td class="p-2">
+                  <div class="text-left font-medium text-green-500">` +
+            message.end.dateTime +
+            `</div>
+                </td>
+                <td class="p-2">
+                  <div class="flex justify-center">
+                    <button onclick='var request = gapi.client.calendar.events.delete({
+          calendarId: "primary",
+          eventId: "` +
+            message.id +
+            `",
+        });request.execute();document.getElementById("` +
+            message.id +
+            `").remove()'>
+                      <svg class="w-8 h-8 hover:text-blue-600 rounded-full hover:bg-gray-100 p-1" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                        </path>
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>`;
+      }
+      /**
+       * Enables user interaction after all libraries are loaded.
+       */
+      function maybeEnableButtons() {
+        if (gapiInited && gisInited) {
+          document.getElementById("authorize_button").style.visibility =
+            "visible";
+        }
+      }
+
+      /**
+       *  Sign in the user upon button click.
+       */
+      function handleAuthClick() {
+        tokenClient.callback = async (resp) => {
+          if (resp.error !== undefined) {
+            throw resp;
+          }
+          document.getElementById("signout_button").style.visibility =
+            "visible";
+          document.getElementById("authorize_button").innerText = "Refresh";
+          await listUpcomingEvents();
+        };
+
+        if (gapi.client.getToken() === null) {
+          // Prompt the user to select a Google Account and ask for consent to share their data
+          // when establishing a new session.
+          tokenClient.requestAccessToken({ prompt: "consent" });
+        } else {
+          // Skip display of account chooser and consent dialog for an existing session.
+          tokenClient.requestAccessToken({ prompt: "" });
+          var table = document.getElementById("table");
+          table.innerHTML = `<thead
+                class="text-xs font-semibold uppercase text-gray-400 bg-gray-50"
+              >
+                <tr>
+                  <th></th>
+                  <th class="p-2">
+                    <div class="font-semibold text-left">Event</div>
+                  </th>
+                  <th class="p-2">
+                    <div class="font-semibold text-left">Start</div>
+                  </th>
+                  <th class="p-2">
+                    <div class="font-semibold text-left">End</div>
+                  </th>
+                  <th class="p-2">
+                    <div class="font-semibold text-center">Action</div>
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody class="text-sm divide-y divide-gray-100 py-10"></tbody>`;
+        }
+      }
+
+      /**
+       *  Sign out the user upon button click.
+       */
+      function handleSignoutClick() {
+        const token = gapi.client.getToken();
+        if (token !== null) {
+          gapi.client.setToken("");
+          document.getElementById("authorize_button").innerText = "Authorize";
+          document.getElementById("signout_button").style.visibility = "hidden";
+          var table = document.getElementById("table");
+          table.innerHTML = `<thead
+                class="text-xs font-semibold uppercase text-gray-400 bg-gray-50"
+              >
+                <tr>
+                  <th></th>
+                  <th class="p-2">
+                    <div class="font-semibold text-left">Event</div>
+                  </th>
+                  <th class="p-2">
+                    <div class="font-semibold text-left">Start</div>
+                  </th>
+                  <th class="p-2">
+                    <div class="font-semibold text-left">End</div>
+                  </th>
+                  <th class="p-2">
+                    <div class="font-semibold text-center">Action</div>
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody class="text-sm divide-y divide-gray-100 py-10"></tbody>`;
+        }
+      }
+
+      /**
+       * Print the summary and start datetime/date of the next ten events in
+       * the authorized user's calendar. If no events are found an
+       * appropriate message is printed.
+       */
+      async function listUpcomingEvents() {
+        let response;
+        try {
+          const request = {
+            calendarId: "primary",
+            timeMin: new Date().toISOString(),
+            showDeleted: false,
+            singleEvents: true,
+            maxResults: 10,
+            orderBy: "startTime",
+          };
+          response = await gapi.client.calendar.events.list(request);
+        } catch (err) {
+          document.getElementById("content").innerText = err.message;
+          return;
+        }
+
+        const events = response.result.items;
+        var table = document.getElementById("table");
+        console.log("listing upcoming");
+        for (const event in events) {
+          data = events[event];
+          table.innerHTML +=
+            `<tr id="` +
+            data.id +
+            `">
+                <td class="p-2">
+                  <input type="checkbox" class="w-5 h-5" value="id-3" @click="toggleCheckbox($el, 15.00)" />
+                </td>
+                <td class="p-2">
+                  <div>
+                    <div class="font-medium text-gray-800">` +
+            data.summary +
+            `</div>
+                  </div>
+                </td>
+                <td class="p-2">
+                  <div class="text-left">` +
+            data.start.dateTime +
+            `</div>
+                </td>
+                <td class="p-2">
+                  <div class="text-left font-medium text-green-500">` +
+            data.end.dateTime +
+            `</div>
+                </td>
+                <td class="p-2">
+                  <div class="flex justify-center">
+                    <button onclick='var request = gapi.client.calendar.events.delete({
+          calendarId: "primary",
+          eventId: "` +
+            data.id +
+            `",
+        });request.execute();document.getElementById("` +
+            data.id +
+            `").remove()'>
+                      <svg class="w-8 h-8 hover:text-blue-600 rounded-full hover:bg-gray-100 p-1" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                        </path>
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>`;
+          console.log(data.id);
+          console.log(`<button onclick='var request = gapi.client.calendar.events.delete({
+          calendarId: "primary",
+          eventId: "` +
+            data.id +
+            `",
+        });request.execute();document.getElementById("` +
+            data.id +
+            `").remove()'>
+                      <svg class="w-8 h-8 hover:text-blue-600 rounded-full hover:bg-gray-100 p-1" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                        </path>
+                      </svg>
+                    </button>`)
+        }
+
+        if (!events || events.length == 0) {
+          return;
+        }
+      }
+    </script>
+    <script
+      async
+      defer
+      src="https://apis.google.com/js/api.js"
+      onload="gapiLoaded()"
+    ></script>
+    <script
+      async
+      defer
+      src="https://accounts.google.com/gsi/client"
+      onload="gisLoaded()"
+    ></script>
+    <script>
+      document.addEventListener("alpine:init", () => {
+        Alpine.data("app", () => ({
+          total: 0,
+          selected: [],
+
+          toggleCheckbox(element, amount) {
+            if (element.checked) {
+              this.selected.push(element.value);
+              this.total += amount;
+            } else {
+              const index = this.selected.indexOf(element.value);
+
+              if (index > -1) this.selected.splice(index, 1);
+
+              this.total -= amount;
+            }
+          },
+        }));
+      });
+    </script>
+  </body>
+</html>
