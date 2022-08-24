@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/AsianGang1/CalendarSecretary/static/css/main.073c9b0a.css",
+    "main.js": "/AsianGang1/CalendarSecretary/static/js/main.e6b35e86.js",
+    "static/js/787.e3d6e39a.chunk.js": "/AsianGang1/CalendarSecretary/static/js/787.e3d6e39a.chunk.js",
+    "index.html": "/AsianGang1/CalendarSecretary/index.html",
+    "main.073c9b0a.css.map": "/AsianGang1/CalendarSecretary/static/css/main.073c9b0a.css.map",
+    "main.e6b35e86.js.map": "/AsianGang1/CalendarSecretary/static/js/main.e6b35e86.js.map",
+    "787.e3d6e39a.chunk.js.map": "/AsianGang1/CalendarSecretary/static/js/787.e3d6e39a.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.073c9b0a.css",
+    "static/js/main.e6b35e86.js"
+  ]
+}
